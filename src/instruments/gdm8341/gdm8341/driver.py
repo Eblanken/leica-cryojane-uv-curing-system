@@ -10,6 +10,7 @@ queue. Call errors() after a configuration change to check that it was accepted.
 
 from __future__ import annotations
 
+import contextlib
 import re
 import time
 from dataclasses import dataclass
@@ -148,6 +149,8 @@ class Gdm8341:
         baud_rate: Must match the meter's MENU > I/O > USB setting.
         timeout_s: Read timeout. 5 s leaves room for a conversion after a range change.
         transport: An open serial-like object to use instead of opening `com_port`.
+        read_retries: How many times measure_active retries a missed reply. From the
+            second retry on, it also closes and reopens the port first.
     """
 
     def __init__(
@@ -157,21 +160,25 @@ class Gdm8341:
         baud_rate: int = 115200,
         timeout_s: float = 5.0,
         transport: Transport | None = None,
+        read_retries: int = 1,
     ):
+        self._serial_settings = {
+            "port": com_port,
+            "baudrate": baud_rate,
+            "bytesize": 8,
+            "parity": "N",
+            "stopbits": 1,
+            "timeout": timeout_s,
+            "xonxoff": False,
+            "rtscts": False,
+            "dsrdtr": False,
+        }
+        self._owns_port = transport is None
         if transport is None:
             if com_port is None:
                 raise ValueError("Give a COM port or a transport.")
-            transport = serial.Serial(
-                port=com_port,
-                baudrate=baud_rate,
-                bytesize=8,
-                parity="N",
-                stopbits=1,
-                timeout=timeout_s,
-                xonxoff=False,
-                rtscts=False,
-                dsrdtr=False,
-            )
+            transport = serial.Serial(**self._serial_settings)
+        self.read_retries = read_retries
         self.port = com_port or "simulated"
         self._interface = transport
         self._interface.reset_input_buffer()
@@ -291,20 +298,41 @@ class Gdm8341:
         suffix = _display_suffix(display)
         return parse_reading(self.query(f"MEAS{suffix}:{function.path}?{argument}"))
 
-    def measure_active(self, retries: int = 1, retry_wait_s: float = 2.0) -> float:
+    def reconnect(self) -> None:
+        """Closes and reopens the serial port. Does nothing for a given transport."""
+        if not self._owns_port:
+            return
+        # A port that has already dropped can fail to close. Reopening is what matters.
+        with contextlib.suppress(serial.SerialException, OSError):
+            self._interface.close()
+        self._interface = serial.Serial(**self._serial_settings)
+        self._interface.reset_input_buffer()
+
+    def measure_active(
+        self, retries: int | None = None, retry_wait_s: float = 2.0
+    ) -> float:
         """One reading in the current function, retrying if the meter misses a reply.
 
         Autoranging can take longer than the read timeout, especially on a PWM signal. A
-        retry waits first, so the late reply lands before query() clears it.
+        retry waits first, so the late reply lands before query() clears it. From the
+        second retry on, it also reopens the port. `retries` defaults to `read_retries`.
         """
+        retries = self.read_retries if retries is None else retries
         for attempt in range(retries + 1):
             try:
                 return self.measure(self.function())
-            except (TimeoutError, ValueError) as error:
+            except (TimeoutError, ValueError, serial.SerialException) as error:
                 if attempt == retries:
                     raise
-                print(f"GDM-8341 read failed, retrying: {error}")
+                print(
+                    f"GDM-8341 read {attempt + 1} failed, retrying: {error}", flush=True
+                )
                 time.sleep(retry_wait_s)
+                if attempt >= 1:
+                    try:
+                        self.reconnect()
+                    except serial.SerialException as reopen_error:
+                        print(f"GDM-8341 reopen failed: {reopen_error}", flush=True)
         raise AssertionError("unreachable")
 
     def read_voltage(self) -> float:
