@@ -30,6 +30,10 @@ contact. That is below the lowest comparator setting (1.25 V, 3.33 kohm), so its
 stays off, and this also holds if the mux loses power or a run stops. The board's 10 kohm
 pull-up limits the current to 0.5 mA.
 
+The mux bridge's watchdog is armed with MUX_WATCHDOG_S. If this host stops talking to
+it, because it crashed, lost power or lost USB, the bridge opens every relay, its stored
+safe state. That needs bridge firmware 2.0.
+
 Check before powering the boards:
 - The dummy loads see the full rail. The schematic labels it +60 V, which is 0.36 W, so
   use resistors rated for at least 0.5 W.
@@ -38,6 +42,7 @@ Check before powering the boards:
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -99,6 +104,25 @@ class Bench:
         self.box.driver.close()
         if self.ad3 is not None:
             self.ad3.driver.close()
+
+
+MUX_WATCHDOG_S = 5.0
+# The meter sometimes misses replies in device 0's PWM band. Retries wait 2 s, and from
+# the second on also reopen the port, so this rides out about half a minute.
+METER_READ_RETRIES = 8
+AD3_OPEN_ATTEMPTS = 5  # Opening fails now and then on the Pi, as captures do.
+
+
+def _open_ad3(ad3_class):
+    for attempt in range(1, AD3_OPEN_ATTEMPTS + 1):
+        try:
+            return ad3_class()
+        except Exception as error:
+            if attempt == AD3_OPEN_ATTEMPTS:
+                raise
+            print(f"AD3 open {attempt} failed, retrying: {str(error).splitlines()[0]}")
+            time.sleep(2.0)
+    raise AssertionError("unreachable")
 
 
 def _simulated_drivers():
@@ -186,9 +210,9 @@ def open_bench(
         if len(ports) != 1:
             raise SystemExit(f"Expected one CH340 port, found {ports}. Pass --qr-port.")
         box = Qr101b(ports[0])
-        meter = Gdm8341(find_gdm_port())
-        mux = RelayMux(find_mux_port(), groups=MUX_GROUPS)
-        scope = Ad3() if ad3 else None
+        meter = Gdm8341(find_gdm_port(), read_retries=METER_READ_RETRIES)
+        mux = RelayMux(find_mux_port(), groups=MUX_GROUPS, watchdog_s=MUX_WATCHDOG_S)
+        scope = _open_ad3(Ad3) if ad3 else None
     return Bench(
         Qr101bDevice(box, name="qr101b"),
         Gdm8341Device(meter, name="gdm"),
