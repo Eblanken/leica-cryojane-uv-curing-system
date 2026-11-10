@@ -1,0 +1,32 @@
+Series resistor 9083.7 ohm, from run ffc3c379-eb29-4223-88d5-09bc67c7e91d
+Device 0: using the given bracket (10300.0, 11000.0) ohm
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 0.01 s.
+AD3 capture 2 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 0.22 s.
+AD3 capture 3 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 0.77 s.
+AD3 capture 4 failed, reopening: FDwfAnalogInStatus: DptiIO failed ERC:2 out:8 in:65536
+AD3 measurement skipped: FDwfAnalogInStatus: DptiIO failed ERC:2 out:8 in:40 (5 captures failed, reopening between them)
+  Device 0 sweep:   10000.0 ohm, sense 2.514 V, low side 24.293 +/- 0.000 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 0.01 s.
+AD3 capture 2 failed, reopening: FDwfDigitalInStatus: DptiIO failed ERC:2 out:8 in:32
+AD3 reopen failed: FDwfDeviceOpen: DptiIO failed ERC:2 out:8 in:8
+Device is not calibrated.
+Device configuration failed ().
+Device:AD3 rev:3 cfg:1 WF:3.25.1
+FDwfDeviceOpenEx
+
+AD3 capture 3 failed, reopening: FDwfDigitalInStatus: DptiIO failed ERC:2 out:8 in:32
+AD3 capture 4 failed, reopening: FDwfDigitalInStatus: DptiIO failed ERC:2 out:8 in:32
+  Device 0 sweep:   10250.0 ohm, sense 2.545 V, low side 24.293 +/- 0.000 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: capture timed out.
+  Device 0 sweep:   10300.0 ohm, sense 2.551 V, low side 24.293 +/- 0.000 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 0.01 s.
+AD3 capture 2 failed, reopening: FDwfDigitalInStatus: DptiIO failed ERC:2 out:8 in:32
+AD3 capture 3 failed, reopening: FDwfDigitalInStatus: DptiIO failed ERC:2 out:8 in:32
+AD3 capture 4 failed, reopening: FDwfAnalogInStatus: DptiIO failed ERC:2 out:8 in:40
+  Device 0 sweep:   10350.0 ohm, sense 2.557 V, low side 24.223 +/- 0.070 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: capture timed out.
+AD3 capture 2 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 1.66 s.
+  Device 0 sweep:   10400.0 ohm, sense 2.564 V, low side 21.278 +/- 2.577 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 0.03 s.
+  Device 0 sweep:   10450.0 ohm, sense 2.570 V, low side 19.266 +/- 2.183 V
+SWEEP EXITED 130

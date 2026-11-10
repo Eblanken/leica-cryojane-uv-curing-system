@@ -1,0 +1,174 @@
+Series resistor 9083.7 ohm, from run ffc3c379-eb29-4223-88d5-09bc67c7e91d
+Continuing run 8aefd24a on device 0: [11050.0, 11000.0, 10950.0, 10900.0, 10850.0, 10800.0, 10750.0, 10700.0, 10650.0, 10600.0, 10550.0, 10500.0, 10450.0, 10400.0, 10350.0, 10300.0, 10250.0, 10000.0]
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 2.91 s.
+AD3 reopen failed: FDwfDeviceOpen: DptiIO failed ERC:2 out:8 in:8
+Device is not calibrated.
+Device configuration failed ().
+Device:AD3 rev:3 cfg:1 WF:3.25.1
+FDwfDeviceOpenEx
+
+AD3 capture 2 failed, reopening: FDwfDigitalInStatus: DptiIO failed ERC:2 out:8 in:32
+  Device 0 sweep_continuation:   11050.0 ohm, sense 2.639 V, low side 0.623 +/- 0.000 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: a 4.0 s capture reported done after 0.01 s.
+  Device 0 sweep_continuation:   11000.0 ohm, sense 2.633 V, low side 0.623 +/- 0.000 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: capture timed out.
+  Device 0 sweep_continuation:   10950.0 ohm, sense 2.627 V, low side 0.623 +/- 0.000 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: DptiIO failed ERC:2 out:8 in:40
+AD3 capture 2 failed, reopening: FDwfDigitalInStatus: DptiIO failed ERC:2 out:8 in:32
+  Device 0 sweep_continuation:   10900.0 ohm, sense 2.622 V, low side 2.305 +/- 2.149 V
+AD3 capture 1 failed, reopening: FDwfAnalogInStatus: capture timed out.
+  Device 0 sweep_continuation:   10850.0 ohm, sense 2.616 V, low side 5.131 +/- 2.177 V
+GDM-8341 read 1 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+GDM-8341 read 2 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+GDM-8341 read 3 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+GDM-8341 read 4 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+GDM-8341 read 5 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+GDM-8341 read 6 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+GDM-8341 read 7 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+GDM-8341 read 8 failed, retrying: No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.
+gdm_reading failed: TimeoutError("No response from GDM-8341 on /dev/ttyUSB0 to 'MEAS:VOLT:DC?'. Check that the meter's interface is set to USB.")
+Run aborted
+ophyd.utils.errors.UnknownStatusFailure: The status (Status(obj=Gdm8341Device(prefix='', name='gdm', read_attrs=['reading', 'range'], configuration_attrs=['function', 'auto_range', 'rate', 'input_impedance_10g', 'model', 'serial_number', 'firmware', 'port']), done=True, success=True) & Status(obj=MeasurementSignal(name='gdm_reading', parent='gdm', value=2.6108, timestamp=1794269479.5483563), done=True, success=False)) has failed. To obtain more specific, helpful errors in the future, update the Device to use set_exception(...) instead of _finished(success=False).
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/run_engine.py", line 1623, in _run
+    msg = self._plan_stack[-1].send(resp)
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 525, in continue_sweep
+    yield from bpp.finalize_wrapper(
+    ...<14 lines>...
+    )
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 558, in finalize_wrapper
+    ret = yield from plan
+          ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 350, in device_sweep
+    yield from steps()
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 1395, in dec_inner
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 1022, in stage_wrapper
+    return (yield from finalize_wrapper(inner(), unstage_devices()))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 558, in finalize_wrapper
+    ret = yield from plan
+          ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 1020, in inner
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 1395, in dec_inner
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 380, in run_wrapper
+    yield from contingency_wrapper(plan, except_plan=except_plan, else_plan=close_run)
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 632, in contingency_wrapper
+    ret = yield from plan
+          ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 341, in steps
+    low_side = yield from block(heater_relay, heater_name, readings_per_block)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 286, in block
+    event = yield from bps.trigger_and_read(detectors, name=stream)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 2096, in __iter__
+    return (yield from self._iter)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/plan_stubs.py", line 1664, in trigger_and_read
+    return (yield from rewindable_wrapper(inner_trigger_and_read(), rewindable))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 759, in rewindable_wrapper
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/plan_stubs.py", line 1647, in inner_trigger_and_read
+    yield from wait(group=grp)
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 2096, in __iter__
+    return (yield from self._iter)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/plan_stubs.py", line 770, in wait
+    return (yield Msg("wait", None, group=group, error_on_timeout=error_on_timeout, timeout=timeout, watch=watch))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/run_engine.py", line 2463, in _status_object_completed
+    raise FailedStatus(ret) from exc
+bluesky.utils.FailedStatus: AndStatus(done=True, success=False)
+ophyd.utils.errors.UnknownStatusFailure: The status (Status(obj=Gdm8341Device(prefix='', name='gdm', read_attrs=['reading', 'range'], configuration_attrs=['function', 'auto_range', 'rate', 'input_impedance_10g', 'model', 'serial_number', 'firmware', 'port']), done=True, success=True) & Status(obj=MeasurementSignal(name='gdm_reading', parent='gdm', value=2.6108, timestamp=1794269479.5483563), done=True, success=False)) has failed. To obtain more specific, helpful errors in the future, update the Device to use set_exception(...) instead of _finished(success=False).
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 796, in <module>
+    main()
+    ~~~~^^
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 717, in main
+    make_run_engine(output)(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        continue_sweep(
+        ^^^^^^^^^^^^^^^
+    ...<19 lines>...
+        lambda name, doc: starts.append(doc) if name == "start" else None,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/run_engine.py", line 981, in __call__
+    plan_return = self._resume_task(init_func=_build_task)
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/run_engine.py", line 1129, in _resume_task
+    raise exc
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/run_engine.py", line 1769, in _run
+    raise err
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/run_engine.py", line 1623, in _run
+    msg = self._plan_stack[-1].send(resp)
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 525, in continue_sweep
+    yield from bpp.finalize_wrapper(
+    ...<14 lines>...
+    )
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 558, in finalize_wrapper
+    ret = yield from plan
+          ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 350, in device_sweep
+    yield from steps()
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 1395, in dec_inner
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 1022, in stage_wrapper
+    return (yield from finalize_wrapper(inner(), unstage_devices()))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 558, in finalize_wrapper
+    ret = yield from plan
+          ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 1020, in inner
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 1395, in dec_inner
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 380, in run_wrapper
+    yield from contingency_wrapper(plan, except_plan=except_plan, else_plan=close_run)
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 632, in contingency_wrapper
+    ret = yield from plan
+          ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 341, in steps
+    low_side = yield from block(heater_relay, heater_name, readings_per_block)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/scripts/duty_cycle_characterization/duty_vs_sensor_resistance.py", line 286, in block
+    event = yield from bps.trigger_and_read(detectors, name=stream)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 2096, in __iter__
+    return (yield from self._iter)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/plan_stubs.py", line 1664, in trigger_and_read
+    return (yield from rewindable_wrapper(inner_trigger_and_read(), rewindable))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/preprocessors.py", line 759, in rewindable_wrapper
+    return (yield from plan)
+            ^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/plan_stubs.py", line 1647, in inner_trigger_and_read
+    yield from wait(group=grp)
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/utils/__init__.py", line 2096, in __iter__
+    return (yield from self._iter)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/plan_stubs.py", line 770, in wait
+    return (yield Msg("wait", None, group=group, error_on_timeout=error_on_timeout, timeout=timeout, watch=watch))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/leica-cryojane-uv-curing-system/.pixi/envs/default/lib/python3.13/site-packages/bluesky/run_engine.py", line 2463, in _status_object_completed
+    raise FailedStatus(ret) from exc
+bluesky.utils.FailedStatus: AndStatus(done=True, success=False)
+SWEEP EXITED 1
