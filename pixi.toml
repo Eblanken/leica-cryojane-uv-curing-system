@@ -2,7 +2,7 @@
 name = "leica-cryojane-uv-curing-system"
 description = "Hardware, firmware and bench tooling for the Leica CryoJane UV curing system."
 channels = ["conda-forge"]
-platforms = ["win-64"]
+platforms = ["win-64", "linux-aarch64"]
 
 [dependencies]
 python = "3.13.*"
