@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digikey-search"
+version = "0.1.0"
+description = "Read-only DigiKey Product Information v4 client for part searches from project scripts."
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+digikey-search = "digikey_search.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["digikey_search*"]
