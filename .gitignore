@@ -1,3 +1,17 @@
+# ================ Kicad ================
+
+# Courtesy of https://www.reddit.com/r/KiCad/comments/1av6ogl/comment/neh8j9n/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+~*.lck
+*-backups/
+fp-info-cache
+*.kicad_prl
+.history/
+
+# ================ PlatformIO ================
+.pio/
+
+# ================ Python ================
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

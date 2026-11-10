@@ -1,0 +1,62 @@
+[workspace]
+name = "leica-cryojane-uv-curing-system"
+description = "Hardware, firmware and bench tooling for the Leica CryoJane UV curing system."
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[dependencies]
+python = "3.13.*"
+numpy = ">=2.3,<3"
+scipy = ">=1.15,<2"
+pandas = ">=2.3,<3"
+matplotlib = ">=3.10,<4"
+ipykernel = ">=6.29,<8"
+ipympl = ">=0.9,<1"
+jupyterlab = ">=4,<5"
+pyserial = ">=3.5,<4"
+pytest = ">=8,<10"
+ruff = ">=0.6"
+# arduino-simple-rpc still imports pkg_resources, which setuptools 82 removed.
+setuptools = "<82"
+openpyxl = ">=3.1,<4"
+bluesky = ">=1.16,<2"
+ophyd = ">=1.11,<2"
+event-model = ">=1.24,<2"
+suitcase-jsonl = ">=0.2.2,<0.3"
+black = ">=26.10,<27"
+commitizen = ">=4.13,<5"
+nbstripout = ">=0.8"
+
+[pypi-dependencies]
+arduino-simple-rpc = ">=2.4.2,<3"
+cryojane-bench = { path = "src/cryojane_bench", editable = true }
+ophyd-adapters = { path = "src/instruments/ophyd_adapters", editable = true }
+gdm8341 = { path = "src/instruments/gdm8341", editable = true }
+qr101b = { path = "src/instruments/qr101b", editable = true }
+xl9535-relay-mux = { path = "src/instruments/xl9535_relay_mux", editable = true }
+ad3 = { path = "src/instruments/ad3", editable = true }
+digikey-search = { path = "src/tools/digikey_search", editable = true }
+
+# conda-forge only carries PlatformIO 5.x, so this comes from PyPI.
+[feature.firmware.pypi-dependencies]
+platformio = ">=6.1,<7"
+
+# JITX pins websockets==15.0.1, which clashes with the bench stack, so the
+# hardware environment is isolated from the default feature set.
+[feature.hardware.dependencies]
+python = "3.13.*"
+
+[feature.hardware.pypi-dependencies]
+jitx = ">=4.4, <5"
+
+[environments]
+default = { solve-group = "default" }
+firmware = { features = ["firmware"], solve-group = "default" }
+hardware = { features = ["hardware"], no-default-feature = true }
+
+[tasks]
+test = "pytest tests src/instruments"
+lab = "jupyter lab"
+list-instruments = "python -m serial.tools.list_ports -v"
+# Black covers the Bluesky migration's files. Widen it when the rest of src/ is ready.
+format = "black src/instruments src/cryojane_bench/cryojane_bench/runs.py scripts/instrument_checks/qr101b_gdm8341_validation/qr101b_gdm8341_validation.py scripts/instrument_checks/qr101b_gap_probe scripts/duty_cycle_characterization scripts/sensor_characterization/acquisition.py scripts/sensor_characterization/convert_legacy_data.py tests/test_runs.py"

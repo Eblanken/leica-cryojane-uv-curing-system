@@ -1,0 +1,9 @@
+# Run once per clone so this takes effect: pixi run nbstripout --install
+*.ipynb text eol=lf filter=nbstripout diff=ipynb
+pixi.lock merge=binary linguist-language=YAML linguist-generated=true
+*.kicad_pcb text eol=lf
+*.kicad_sch text eol=lf
+*.picolog binary
+*.hobo binary
+*.xlsx binary
+*.pdf binary

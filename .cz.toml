@@ -1,0 +1,51 @@
+# Commit messages and versioning, adapted from ZET10_Thermal_Analysis. Differences from
+# that config: the schema, bump and changelog rules accept the types in the menu below, and
+# there is no pre-bump build hook.
+#
+#   pixi run cz commit          Write a commit message from the menu.
+#   pixi run cz check -m "..."  Check a message.
+#   pixi run cz bump --dry-run  Show the next version.
+
+[tool.commitizen]
+name = "cz_customize"
+version = "0.1.0"
+
+[tool.commitizen.customize]
+message_template = "{{change_type}}:{% if show_message %} {{message}}{% endif %}"
+example = "feat: add the AD3 driver"
+schema = "<type>: <body>"
+schema_pattern = "(fix|feat|docs|style|refactor|perf|test|build|ci|wip|chore)(!)?:(\\s.*)"
+bump_pattern = "^([a-z]+!|feat|fix)"
+bump_map = { "[a-z]+!" = "MAJOR", "feat" = "MINOR", "fix" = "PATCH" }
+change_type_order = ["BREAKING CHANGE", "feat", "fix", "refactor", "perf"]
+commit_parser = "^(?P<change_type>feat|fix|refactor|perf)(!)?:\\s(?P<message>.*)?"
+changelog_pattern = "^(feat|fix|refactor|perf)(!)?:"
+change_type_map = { "feat" = "Feat", "fix" = "Fix", "refactor" = "Refactor", "perf" = "Perf" }
+
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "change_type"
+choices = [
+    { value = "fix", name = "fix: A bug fix. Correlates with PATCH in SemVer" },
+    { value = "feat", name = "feat: A new feature. Correlates with MINOR in SemVer" },
+    { value = "docs", name = "docs: Documentation only changes" },
+    { value = "style", name = "style: Changes that do not affect the meaning of the code (white-space, formatting, semi-colons, etc.)" },
+    { value = "refactor", name = "refactor: A code change that neither fixes a bug nor adds a feature" },
+    { value = "perf", name = "perf: A code change that improves performance" },
+    { value = "test", name = "test: Adding missing or correcting existing tests" },
+    { value = "build", name = "build: Changes that affect the build system or external dependencies" },
+    { value = "ci", name = "ci: Changes to CI configuration files and scripts" },
+    { value = "wip", name = "wip: Work done in the service of a version-incrementing keyword like \"fix\" or \"feat\"" },
+    { value = "chore", name = "chore: Build process changes with no repository content modifications" },
+]
+message = "Select the type of change you are committing"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "message"
+message = "Body."
+
+[[tool.commitizen.customize.questions]]
+type = "confirm"
+name = "show_message"
+message = "Do you want to add body message in commit?"
