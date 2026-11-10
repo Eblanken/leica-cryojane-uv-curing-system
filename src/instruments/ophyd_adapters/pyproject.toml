@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ophyd-adapters"
+version = "0.1.0"
+description = "Ophyd signals backed by plain instrument-driver methods."
+requires-python = ">=3.13"
+dependencies = ["ophyd>=1.11,<2"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ophyd_adapters*"]

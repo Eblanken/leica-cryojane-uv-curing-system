@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ad3"
+version = "0.1.0"
+description = "Digilent Analog Discovery 3: listen-only driver, simulator and Bluesky device."
+requires-python = ">=3.13"
+dependencies = ["numpy>=2.3,<3"]
+
+[project.optional-dependencies]
+bluesky = ["ophyd>=1.11,<2", "ophyd-adapters"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ad3*"]

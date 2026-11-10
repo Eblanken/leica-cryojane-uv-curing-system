@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xl9535-relay-mux"
+version = "0.1.0"
+description = "XL9535 16-relay mux behind an ESP32 USB-to-I2C bridge: driver, simulator and Bluesky device."
+requires-python = ">=3.13"
+dependencies = ["pyserial>=3.5,<4", "arduino-simple-rpc>=2.4.2,<3"]
+
+[project.optional-dependencies]
+bluesky = ["ophyd>=1.11,<2", "ophyd-adapters"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["xl9535_relay_mux*"]
