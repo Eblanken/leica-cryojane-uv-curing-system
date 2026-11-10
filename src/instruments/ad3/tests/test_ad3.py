@@ -93,3 +93,59 @@ def test_device_takes_one_capture_per_event():
     assert sim.calls.count("FDwfAnalogInReset") == 2
     descriptor = next(doc for name, doc in documents if name == "descriptor")
     assert descriptor["configuration"]["ad3"]["data"]["ad3_sdk_version"] == "3.22.2"
+
+
+def test_a_failed_capture_is_retried_after_reopening():
+    sim = SimulatedDwf(_pwm(100.0, 0.3))
+    with Ad3(dwf=sim, window_s=0.3) as ad3:
+        sim.fail_next = "FDwfDigitalInStatus"
+        result = ad3.measure()
+        assert result.attempts == 2
+        assert result.pin_high_fraction == pytest.approx(0.3, abs=0.02)
+        assert (sim.opens, sim.open_count) == (2, 1)
+
+
+def test_a_capture_that_finishes_early_is_retried():
+    sim = SimulatedDwf(_pwm(100.0, 0.3))
+    with Ad3(dwf=sim, window_s=0.3) as ad3:
+        sim.done_early = True
+        assert ad3.measure().attempts == 2
+
+
+def test_gives_up_after_its_attempts():
+    sim = SimulatedDwf()
+    with Ad3(dwf=sim, window_s=0.2, attempts=2) as ad3:
+        sim.done_early = True
+        sim.fail_next = "FDwfAnalogInStatus"
+        with pytest.raises(Ad3Error, match="2 captures failed"):
+            ad3.measure()
+
+
+def test_tolerated_failures_come_back_as_nan():
+    sim = SimulatedDwf()
+    with Ad3(dwf=sim, window_s=0.2, attempts=2, tolerate_failures=True) as ad3:
+        sim.done_early = True
+        sim.fail_next = "FDwfAnalogInStatus"
+        result = ad3.measure()
+        assert result.attempts == -2
+        assert np.isnan(result.pin_high_fraction)
+        assert sim.open_count == 1
+        assert ad3.measure().attempts == 1
+
+
+def test_zero_attempts_retries_until_a_capture_works():
+    sim = SimulatedDwf(_pwm(100.0, 0.3))
+    with Ad3(dwf=sim, window_s=0.2, attempts=0) as ad3:
+        failures = iter(
+            ["FDwfAnalogInStatus", "FDwfDigitalInStatus", "FDwfAnalogInReset"]
+        )
+        original = ad3.capture
+
+        def flaky(window_s=None):
+            name = next(failures, None)
+            if name:
+                sim.fail_next = name
+            return original(window_s)
+
+        ad3.capture = flaky
+        assert ad3.measure().attempts == 4

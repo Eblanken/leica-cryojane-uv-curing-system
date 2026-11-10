@@ -23,6 +23,13 @@ SAMPLE_BITS = 16
 DEFAULT_WINDOW_S = 4.0
 DEFAULT_RANGE_V = 50.0  # The widest scope range, so nothing on the bench can clip it.
 MARGIN_S = 5.0  # Extra time allowed for a capture to finish.
+# On the Pi the AD3's USB link drops out now and then: a status call fails or a capture
+# never finishes, and every call fails after that until the device is reopened. Once a
+# capture also reported done 0.01 s into a 3 s window, so one that ends this much early
+# is treated as a failure too.
+DEFAULT_ATTEMPTS = 3
+UNLIMITED_PAUSE_EVERY, UNLIMITED_PAUSE_S = 10, 10.0
+EARLIEST_DONE_FRACTION = 0.9
 
 
 class Ad3Error(RuntimeError):
@@ -78,6 +85,7 @@ class Measurement:
     ch2_mean_v: float = float("nan")
     ch2_min_v: float = float("nan")
     ch2_max_v: float = float("nan")
+    attempts: int = 0  # Captures it took, counting the ones that failed.
 
 
 def summarize_edges(bits: np.ndarray, sample_hz: float) -> EdgeSummary:
@@ -109,13 +117,24 @@ class Ad3:
         window_s: float = DEFAULT_WINDOW_S,
         digital_pin: int = 0,
         range_v: float = DEFAULT_RANGE_V,
+        attempts: int = DEFAULT_ATTEMPTS,
+        tolerate_failures: bool = False,
     ):
         self.dwf = load_library() if dwf is None else dwf
         self.window_s = window_s
         self.digital_pin = digital_pin
         self.range_v = range_v
+        self.attempts = attempts
+        # When set, a measurement whose every capture failed comes back as NaN with
+        # `attempts` negative, instead of raising, so a long run can carry on without it.
+        self.tolerate_failures = tolerate_failures
         self.last = Measurement()
+        self._index = index
         self._handle = c.c_int()
+        self._open()
+
+    def _open(self) -> None:
+        index = self._index
         self.call("FDwfDeviceOpen", c.c_int(index), c.byref(self._handle))
         if self._handle.value == 0:
             raise Ad3Error(
@@ -125,6 +144,11 @@ class Ad3:
         if self.output_enable_mask:
             self.close()
             raise Ad3Error("The AD3 opened with digital outputs enabled.")
+
+    def reopen(self) -> None:
+        """Closes and opens the device again, which clears a failed USB transfer."""
+        self.close()
+        self._open()
 
     # Plumbing.
 
@@ -243,12 +267,18 @@ class Ad3:
 
     # Captures.
 
-    def _wait(self, status_function: str, timeout_s: float) -> None:
+    def _wait(self, status_function: str, started: float, window_s: float) -> None:
         state = c.c_byte()
-        deadline = time.monotonic() + timeout_s
+        deadline = started + window_s + MARGIN_S
         while True:
             self.call(status_function, self._handle, c.c_int(1), c.byref(state))
             if state.value == STATE_DONE:
+                elapsed = time.monotonic() - started
+                if elapsed < EARLIEST_DONE_FRACTION * window_s:
+                    raise Ad3Error(
+                        f"{status_function}: a {window_s} s capture reported done "
+                        f"after {elapsed:.2f} s."
+                    )
                 return
             if time.monotonic() > deadline:
                 raise Ad3Error(f"{status_function}: capture timed out.")
@@ -265,10 +295,11 @@ class Ad3:
             analog_samples / window, analog_samples, self.range_v
         )
         digital_hz = self._arm_digital(digital_samples / window, digital_samples)
+        started = time.monotonic()
         self.call("FDwfAnalogInConfigure", self._handle, c.c_int(1), c.c_int(1))
         self.call("FDwfDigitalInConfigure", self._handle, c.c_int(1), c.c_int(1))
-        self._wait("FDwfAnalogInStatus", window + MARGIN_S)
-        self._wait("FDwfDigitalInStatus", window + MARGIN_S)
+        self._wait("FDwfAnalogInStatus", started, window)
+        self._wait("FDwfDigitalInStatus", started, window)
         return Capture(
             self._fetch_analog(analog_samples),
             analog_hz,
@@ -276,9 +307,56 @@ class Ad3:
             digital_hz,
         )
 
+    def _reopen_quietly(self) -> None:
+        try:
+            self.reopen()
+        except Ad3Error as error:
+            # The next capture fails on the closed handle, and reopens again.
+            print(f"AD3 reopen failed: {error}", flush=True)
+
+    def _capture_with_retries(self, window_s: float | None) -> tuple[Capture, int]:
+        """Reopens the device after a failed capture, up to `attempts` captures in all.
+
+        `attempts` of 0 or less retries until a capture works, pausing a little longer
+        after every UNLIMITED_PAUSE_EVERY failures in a row.
+        """
+        unlimited = self.attempts <= 0
+        attempt = 0
+        while True:
+            attempt += 1
+            try:
+                if not self._handle.value:
+                    self.reopen()
+                return self.capture(window_s), attempt
+            except Ad3Error as error:
+                first_line = str(error).splitlines()[0]
+                if not unlimited and attempt >= self.attempts:
+                    raise Ad3Error(
+                        f"{first_line} ({attempt} captures failed, reopening between "
+                        "them)"
+                    ) from error
+                print(
+                    f"AD3 capture {attempt} failed, reopening: {first_line}", flush=True
+                )
+                if unlimited and attempt % UNLIMITED_PAUSE_EVERY == 0:
+                    time.sleep(UNLIMITED_PAUSE_S)
+                self._reopen_quietly()
+
     def measure(self, window_s: float | None = None) -> Measurement:
-        """One capture reduced to duty, frequency and voltages. Also kept as `last`."""
-        capture = self.capture(window_s)
+        """One capture reduced to duty, frequency and voltages. Also kept as `last`.
+
+        A failed capture is retried after reopening the device, and `attempts` in the
+        result says how many captures it took.
+        """
+        try:
+            capture, attempts = self._capture_with_retries(window_s)
+        except Ad3Error as error:
+            if not self.tolerate_failures:
+                raise
+            print(f"AD3 measurement skipped: {error}", flush=True)
+            self._reopen_quietly()
+            self.last = Measurement(attempts=-abs(self.attempts))
+            return self.last
         edges = summarize_edges(capture.line(self.digital_pin), capture.digital_hz)
         channels: Sequence[AnalogSummary] = [
             summarize_analog(row) for row in capture.analog_v
@@ -293,6 +371,7 @@ class Ad3:
             channels[1].mean_v,
             channels[1].min_v,
             channels[1].max_v,
+            attempts,
         )
         return self.last
 

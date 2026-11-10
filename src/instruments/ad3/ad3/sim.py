@@ -7,6 +7,7 @@ of times in seconds and returns (channel 1 volts, channel 2 volts, digital pin 0
 from __future__ import annotations
 
 import ctypes as c
+import time
 from collections.abc import Callable
 
 import numpy as np
@@ -27,6 +28,9 @@ class SimulatedDwf:
         self.output_mask = 0
         self.open_count = 0
         self.fail_next: str | None = None
+        self.done_early = False  # The next capture reports done as soon as it starts.
+        self.opens = 0  # Every open, including reopens.
+        self._started = {"analog": 0.0, "digital": 0.0}
         self.calls: list[str] = []
         self._analog_hz = 1_000.0
         self._analog_samples = ANALOG_BUFFER
@@ -69,6 +73,7 @@ class SimulatedDwf:
     def _FDwfDeviceOpen(self, _index, handle):
         handle._obj.value = 1
         self.open_count += 1
+        self.opens += 1
 
     def _FDwfDeviceClose(self, _handle):
         self.open_count -= 1
@@ -112,10 +117,17 @@ class SimulatedDwf:
         pass
 
     def _FDwfAnalogInConfigure(self, _handle, _reconfigure, _start):
-        pass
+        self._started["analog"] = time.monotonic()
+
+    def _done(self, instrument: str, seconds: float) -> int:
+        """Done once the capture's real length has passed, like the device."""
+        if self.done_early:
+            self.done_early = False
+            return 2
+        return 2 if time.monotonic() - self._started[instrument] >= seconds else 3
 
     def _FDwfAnalogInStatus(self, _handle, _read, state):
-        state._obj.value = 2
+        state._obj.value = self._done("analog", self._analog_samples / self._analog_hz)
 
     def _FDwfAnalogInStatusData(self, _handle, channel, data, samples):
         times = np.arange(samples.value) / self._analog_hz
@@ -149,10 +161,11 @@ class SimulatedDwf:
         pass
 
     def _FDwfDigitalInConfigure(self, _handle, _reconfigure, _start):
-        pass
+        self._started["digital"] = time.monotonic()
 
     def _FDwfDigitalInStatus(self, _handle, _read, state):
-        state._obj.value = 2
+        seconds = self._digital_samples * self._digital_divider / CLOCK_HZ
+        state._obj.value = self._done("digital", seconds)
 
     def _FDwfDigitalInStatusData(self, _handle, data, _bytes):
         samples = c.sizeof(data) // c.sizeof(c.c_uint16)

@@ -31,6 +31,7 @@ class Ad3Device(DriverDevice):
     ch2_mean_v = _last("ch2_mean_v", "V")
     ch2_min_v = _last("ch2_min_v", "V")
     ch2_max_v = _last("ch2_max_v", "V")
+    attempts = _last("attempts", "")
     window_s = Cpt(DriverSignal, getter="window_s", units="s", kind="config")
     digital_pin = Cpt(DriverSignal, getter="digital_pin", kind="config")
     range_v = Cpt(DriverSignal, getter="range_v", units="V", kind="config")
