@@ -1,0 +1,10 @@
+part,maker,peak_nm,flux_mw,flux_test_a,max_current_a,vf_v,viewing_angle_deg,package_mm,min_operating_c,unit_price_usd,source,unverified
+SST-08-UV-A130H-F365-00,Luminus,370,1470,1.0,1.0,4.0,130,3.5,-40,2.46,"Luminus PDS-003369 Rev 05: bin F correlated minimum at 1000 mA; DigiKey price at 100 (2026-11-09)","Vf at 1 A (typ 3.8 V at 0.5 A); datasheet gives storage -40 C and Tj max only, no ambient operating minimum"
+IN-C33CTNU2,Inolux,367,910,0.7,1.0,3.8,120,3.5,-40,4.37,"Inolux IN-C33(X)TN V1.0: bin B2 minimum at 700 mA, Topr -40 to 125 C; DigiKey price at 100 (2026-11-09)","flux at 1 A (scaled from 700 mA); which flux bins DigiKey stock ships"
+IN-C39CTOU2,Inolux,367,1600,1.0,1.0,4.0,120,3.9,-40,7.79,"Inolux IN-C39(X)TO V1.0: bin H1 minimum at 1000 mA, Topr -40 to 80 C; DigiKey price at 100 (2026-11-09)","Vf typical (datasheet range 3.0-4.4 V at 1 A)"
+IN-C68QACTMU2,Inolux,367,3000,0.7,1.0,14.0,120,6.8,-40,21.65,"Inolux IN-C68QA(X)TM: bin P35 minimum at 700 mA, Topr -40 to 80 C; DigiKey price at 100 (2026-11-09)","flux at 1 A (scaled from 700 mA); multi-chip, Vf 12-16.8 V"
+15335337AA350,Wurth,365,700,0.5,0.7,3.8,130,3.5,-40,10.39,"Wurth WL-SUMW datasheet: 700 mW minimum at 500 mA, 700 mA CW, -40 to 85 C; DigiKey price at 100 (2026-11-09)","flux at 700 mA (scaled from 500 mA); DigiKey stock only 2"
+LTPL-C034UVH365,Lite-On,365,665,0.7,0.7,4.0,130,3.5,-40,4.48,"DigiKey listing 5414487: 665 mW, 700 mA, -40 to 85 C; price at 100 (2026-11-09)","datasheet unreadable (site blocked); flux test current and whether 665 mW is min or typ"
+NVSU233B-U365,Nichia,365,1450,1.0,1.0,3.85,120,3.5,-40,15.00,"Nichia STS-DA1-4890A via hergipedia.oc.uni-kiel.de; retail EUR 18.90","not found on DigiKey; viewing angle (110-120 deg), min operating temp, price"
+CUN66B1B,Seoul Viosys,367,1000,0.5,0.5,3.6,45,3.5,-10,8.00,"DigiKey listing 9997669, RS 2471997","flux: listing says '1 W', test conditions unknown; price"
+NSPU510CS,Nichia,375,15.1,0.015,0.020,3.3,34,5.3,-30,1.50,"Nichia STS-DA1-2745A (docs/literature_review/nichia_nspu510cs.md)","price; beam is a batwing, modelled as a 34 deg cone"
