@@ -26,6 +26,13 @@ class RelayMuxDevice(DriverDevice):
     )
     target_address = Cpt(DriverSignal, getter="target_address", kind="config")
     port = Cpt(DriverSignal, getter="port", kind="config")
+    # The bridge's watchdog timeout, or -1 when it isn't armed.
+    watchdog_s = Cpt(
+        DriverSignal,
+        getter=lambda driver: -1.0 if driver.watchdog_s is None else driver.watchdog_s,
+        units="s",
+        kind="config",
+    )
 
     def unstage(self):
         self.driver.open_all()
